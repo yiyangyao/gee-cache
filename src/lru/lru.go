@@ -55,5 +55,28 @@ func (c *Cache) Eliminate() {
 }
 
 func (c *Cache) Add(key string, value Value) bool {
+	if c.maxBytes <= 0 {
+		return false
+	}
+	if ele, ok := c.cache[key]; ok {
+		kv := ele.Value.(*entry)
+		c.nbytes = c.nbytes + int64(value.Len()) - int64(kv.value.Len())
+		kv.value = value
+		c.ll.MoveToFront(ele)
+	} else {
+		ele := c.ll.PushFront(&entry{
+			key:   key,
+			value: value,
+		})
+		c.cache[key] = ele
+		c.nbytes = c.nbytes + int64(len(key)) + int64(value.Len())
+	}
+	for c.maxBytes < c.nbytes {
+		c.Eliminate()
+	}
 	return true
+}
+
+func (c *Cache) Len() int {
+	return c.ll.Len()
 }
