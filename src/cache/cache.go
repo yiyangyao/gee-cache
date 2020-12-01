@@ -6,22 +6,22 @@ import (
 	"sync"
 )
 
-type cache struct {
+type Cache struct {
 	mutex      sync.Mutex
 	lru        *lru.Cache
-	cacheBytes int64
+	CacheBytes int64
 }
 
-func (c *cache) add(key string, value byteview.ByteView) {
+func (c *Cache) Add(key string, value byteview.ByteView) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 	if c.lru == nil {
-		c.lru = lru.New(c.cacheBytes, nil)
+		c.lru = lru.New(c.CacheBytes, nil)
 	}
 	c.lru.Add(key, value)
 }
 
-func (c *cache) get(key string) (value byteview.ByteView, ok bool) {
+func (c *Cache) Get(key string) (value byteview.ByteView, ok bool) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 	if c.lru == nil {
