@@ -1,7 +1,6 @@
-package cache
+package src
 
 import (
-	"gee-cache/src/byteview"
 	"gee-cache/src/lru"
 	"sync"
 )
@@ -12,7 +11,7 @@ type Cache struct {
 	CacheBytes int64
 }
 
-func (c *Cache) Add(key string, value byteview.ByteView) {
+func (c *Cache) Add(key string, value ByteView) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 	if c.lru == nil {
@@ -21,7 +20,7 @@ func (c *Cache) Add(key string, value byteview.ByteView) {
 	c.lru.Add(key, value)
 }
 
-func (c *Cache) Get(key string) (value byteview.ByteView, ok bool) {
+func (c *Cache) Get(key string) (value ByteView, ok bool) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
 	if c.lru == nil {
@@ -29,7 +28,7 @@ func (c *Cache) Get(key string) (value byteview.ByteView, ok bool) {
 	}
 
 	if v, ok := c.lru.Get(key); ok {
-		return v.(byteview.ByteView), ok
+		return v.(ByteView), ok
 	}
 
 	return
